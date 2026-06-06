@@ -44,7 +44,7 @@
 </head>
 <body>
   <h1>Outreach Capture</h1>
-  <p class="sub">Save this page to your local tool</p>
+  <p class="sub">Save to <span id="apiLabel">azbuilds.xyz</span></p>
 
   <p class="warn" id="serverWarn" style="display:none">
     Tool not running — start with <code>npm start</code> in backlink-outreach-tool
@@ -76,6 +76,7 @@
   </label>
 
   <button class="btn btn-primary" id="saveBtn">Save opportunity</button>
+  <button class="btn btn-ghost" id="useLocalBtn">Toggle local / live server</button>
   <button class="btn btn-ghost" id="openToolBtn">Open dashboard</button>
 
   <p class="status" id="status"></p>

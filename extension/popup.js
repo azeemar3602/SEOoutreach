@@ -1,5 +1,13 @@
-const API = 'http://localhost:3847';
+const DEFAULT_API = 'https://azbuilds.xyz';
+const LOCAL_API = 'http://localhost:3847';
+let API = DEFAULT_API;
 let pageData = null;
+
+async function getApiBase() {
+  const stored = await chrome.storage.local.get(['apiUrl', 'useLocal']);
+  if (stored.useLocal) return LOCAL_API;
+  return stored.apiUrl || DEFAULT_API;
+}
 
 async function api(path, opts = {}) {
   const res = await fetch(`${API}${path}`, {
@@ -109,10 +117,21 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
 });
 
 document.getElementById('openToolBtn').addEventListener('click', () => {
-  chrome.tabs.create({ url: `${API}` });
+  chrome.tabs.create({ url: API });
+});
+
+document.getElementById('useLocalBtn')?.addEventListener('click', async () => {
+  const stored = await chrome.storage.local.get('useLocal');
+  const useLocal = !stored.useLocal;
+  await chrome.storage.local.set({ useLocal });
+  API = await getApiBase();
+  document.getElementById('apiLabel').textContent = API;
+  await loadProjects();
 });
 
 (async () => {
+  API = await getApiBase();
+  document.getElementById('apiLabel').textContent = API;
   pageData = await scanCurrentTab();
   renderPageInfo(pageData);
   await loadProjects();

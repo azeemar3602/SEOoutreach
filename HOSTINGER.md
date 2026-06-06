@@ -1,13 +1,10 @@
-# Hostinger deploy — azbuilds.xyz
+# Hostinger deploy — azbuilds.xyz (root domain)
+
+Live URL: **https://azbuilds.xyz**
 
 ## Security first
 
-You shared your API key in chat. **Rotate it now:**
-
-1. hPanel → **Profile** → **API**
-2. Delete the old key
-3. Generate a new one
-4. Use the new key only in `.env` or GitHub Secrets — never in chat or code
+Rotate your API key if you shared it in chat. hPanel → **API** → delete old key → create new one.
 
 ---
 
@@ -17,7 +14,7 @@ You shared your API key in chat. **Rotate it now:**
 |------|------------------|
 | **API key** | hPanel → API |
 | **VM ID** | VPS hostname `srv123456.hstgr.cloud` → ID is `123456` |
-| **VPS with Docker** | hPanel → VPS → use Docker template |
+| **VPS with Docker** | hPanel → VPS → Docker template |
 
 ---
 
@@ -36,87 +33,59 @@ git push -u origin main
 
 Repo → **Settings** → **Secrets and variables** → **Actions**
 
-**Secret:**
-- `HOSTINGER_API_KEY` = your new API key
+| Type | Name | Value |
+|------|------|-------|
+| Secret | `HOSTINGER_API_KEY` | your new API key |
+| Variable | `HOSTINGER_VM_ID` | VPS number (e.g. `123456`) |
 
-**Variable:**
-- `HOSTINGER_VM_ID` = your VPS number (e.g. `123456`)
-
-Push to `main` → GitHub Action deploys automatically.
+Push to `main` → GitHub Action deploys via Docker.
 
 ---
 
-## Step 3 — Point azbuilds.xyz to the app
+## Step 3 — DNS for root domain
 
-### Option A: Subdomain (recommended)
-
-Use **`outreach.azbuilds.xyz`** for the tool.
-
-In hPanel → **Domains** → **azbuilds.xyz** → **DNS**:
+hPanel → **Domains** → **azbuilds.xyz** → **DNS**
 
 | Type | Name | Points to |
 |------|------|-----------|
-| A | outreach | YOUR_VPS_IP |
+| A | `@` | YOUR_VPS_IP |
+| A | `www` | YOUR_VPS_IP |
 
-### Option B: Path on main domain
-
-Use Nginx on the VPS to proxy `azbuilds.xyz/outreach` → port 3847 (see below).
+Remove any old A records pointing elsewhere if the domain should only serve this app.
 
 ---
 
-## Step 4 — Nginx + HTTPS (after deploy)
+## Step 4 — Nginx + HTTPS on VPS
 
-SSH into your VPS, then:
+SSH into the VPS as **root**, then:
 
 ```bash
 sudo apt update && sudo apt install -y nginx certbot python3-certbot-nginx
 
-sudo tee /etc/nginx/sites-available/outreach <<'EOF'
-server {
-    listen 80;
-    server_name outreach.azbuilds.xyz;
+sudo cp /path/to/backlink-outreach-tool/deploy/nginx-azbuilds.conf /etc/nginx/sites-available/azbuilds
+# Or paste from deploy/nginx-azbuilds.conf in this repo
 
-    location / {
-        proxy_pass http://127.0.0.1:3847;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-}
-EOF
-
-sudo ln -sf /etc/nginx/sites-available/outreach /etc/nginx/sites-enabled/
+sudo ln -sf /etc/nginx/sites-available/azbuilds /etc/nginx/sites-enabled/
+sudo rm -f /etc/nginx/sites-enabled/default
 sudo nginx -t && sudo systemctl reload nginx
-sudo certbot --nginx -d outreach.azbuilds.xyz
+sudo certbot --nginx -d azbuilds.xyz -d www.azbuilds.xyz
 ```
 
-Live URL: **https://outreach.azbuilds.xyz**
+Open **https://azbuilds.xyz**
 
 ---
 
-## Step 5 — Update browser extension
+## Step 5 — Browser extension
 
-In `extension/popup.js`:
+The extension defaults to `https://azbuilds.xyz`. For local dev, open extension popup → it uses production URL when deployed.
 
-```javascript
-const API = 'https://outreach.azbuilds.xyz';
-```
-
-In `extension/manifest.json`, add to `host_permissions`:
-
-```json
-"https://outreach.azbuilds.xyz/*"
-```
-
-Reload the extension in Chrome.
+Reload extension in Chrome after deploy.
 
 ---
 
-## Manual deploy (without GitHub)
+## Manual deploy (no GitHub)
 
-On the VPS with Docker:
+On the VPS:
 
 ```bash
 git clone https://github.com/YOUR-USERNAME/backlink-outreach-tool.git
@@ -124,7 +93,7 @@ cd backlink-outreach-tool
 docker compose up -d --build
 ```
 
-App runs on port **3847**.
+App listens on port **3847**; Nginx proxies **azbuilds.xyz** → `127.0.0.1:3847`.
 
 ---
 
@@ -132,11 +101,10 @@ App runs on port **3847**.
 
 - [ ] API key rotated
 - [ ] VPS running with Docker
-- [ ] VM ID noted
-- [ ] Code pushed to GitHub
-- [ ] GitHub secrets set
-- [ ] DNS A record for `outreach.azbuilds.xyz`
-- [ ] Nginx + SSL configured
-- [ ] Extension updated with live URL
+- [ ] VM ID in GitHub variables
+- [ ] Code on GitHub, secrets set
+- [ ] A records: `@` and `www` → VPS IP
+- [ ] Nginx + SSL on VPS
+- [ ] https://azbuilds.xyz loads the dashboard
 
-When steps 1–3 are done, tell me your **VM ID** and whether you want **`outreach.azbuilds.xyz`** or the root domain — I can help with the Nginx config and DNS record format.
+When VPS + VM ID are ready, share the **VM ID** (number only) and GitHub repo URL if you want help verifying the deploy.
