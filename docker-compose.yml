@@ -1,0 +1,16 @@
+services:
+  outreach:
+    build: .
+    container_name: backlink-outreach
+    restart: unless-stopped
+    ports:
+      - "3847:3847"
+    environment:
+      NODE_ENV: production
+      PORT: 3847
+      DATA_DIR: /app/data
+    volumes:
+      - outreach-data:/app/data
+
+volumes:
+  outreach-data:
