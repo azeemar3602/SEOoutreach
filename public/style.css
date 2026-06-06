@@ -1,0 +1,246 @@
+:root {
+  --bg: #0f1117;
+  --surface: #1a1d27;
+  --border: #2a2f3d;
+  --text: #e8eaef;
+  --muted: #8b93a7;
+  --accent: #5b8def;
+  --accent-hover: #4a7ad8;
+  --success: #3ecf8e;
+  --warning: #f5a623;
+  --radius: 8px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.app { display: flex; min-height: 100vh; }
+
+.sidebar {
+  width: 260px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.brand h1 { font-size: 1.1rem; font-weight: 600; }
+.brand p { font-size: 0.75rem; color: var(--muted); margin-top: 0.25rem; }
+
+.project-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 0.35rem; }
+
+.project-item {
+  padding: 0.6rem 0.75rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background 0.15s;
+}
+
+.project-item:hover { background: var(--bg); }
+.project-item.active { background: var(--bg); border-color: var(--accent); }
+
+.project-item .name { font-size: 0.875rem; font-weight: 500; }
+.project-item .meta { font-size: 0.7rem; color: var(--muted); }
+
+.main { flex: 1; padding: 1.5rem 2rem; overflow-y: auto; }
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  color: var(--muted);
+  text-align: center;
+}
+
+.empty-state h2 { color: var(--text); margin-bottom: 0.5rem; }
+
+.hidden { display: none !important; }
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+}
+
+.topbar h2 { font-size: 1.4rem; }
+.topbar a { font-size: 0.85rem; color: var(--accent); text-decoration: none; }
+
+.topbar-actions { display: flex; gap: 0.5rem; }
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.85rem 1rem;
+}
+
+.stat-card .value { font-size: 1.5rem; font-weight: 700; }
+.stat-card .label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+select, input[type="text"], input[type="url"], input[type="email"], textarea {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  padding: 0.45rem 0.65rem;
+  font-size: 0.85rem;
+}
+
+select { cursor: pointer; }
+
+textarea { width: 100%; resize: vertical; font-family: inherit; }
+
+.panels {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 900px) { .panels { grid-template-columns: 1fr; } }
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+}
+
+.panel h3 { font-size: 0.9rem; margin-bottom: 0.35rem; }
+.hint { font-size: 0.75rem; color: var(--muted); margin-bottom: 0.5rem; }
+
+.row { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+.row input { flex: 1; }
+
+.btn {
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--radius);
+  border: none;
+  font-size: 0.85rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.15s;
+}
+
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: var(--accent-hover); }
+.btn-secondary { background: var(--border); color: var(--text); }
+.btn-secondary:hover { background: #3a4050; }
+.btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+.btn-ghost:hover { color: var(--text); }
+.btn-sm { padding: 0.25rem 0.5rem; font-size: 0.75rem; }
+
+.checkbox-label { font-size: 0.85rem; display: flex; align-items: center; gap: 0.35rem; color: var(--muted); }
+
+.scan-status {
+  background: var(--surface);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+}
+
+.table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius); }
+
+table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+
+th, td { padding: 0.6rem 0.75rem; text-align: left; border-bottom: 1px solid var(--border); }
+
+th { background: var(--surface); color: var(--muted); font-weight: 500; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; }
+
+tr:hover td { background: rgba(255,255,255,0.02); }
+
+.badge {
+  display: inline-block;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.badge-guest_post { background: #2d3a5c; color: #8ab4ff; }
+.badge-editorial { background: #2d4a3a; color: #7dcea0; }
+.badge-resource_page { background: #4a3d2d; color: #f0c674; }
+.badge-directory { background: #3d2d4a; color: #c39bd3; }
+.badge-forum { background: #3d3d3d; color: #aaa; }
+.badge-unknown { background: #2a2a2a; color: #888; }
+
+.badge-new { background: #2a3040; color: var(--muted); }
+.badge-contacted { background: #3d3520; color: var(--warning); }
+.badge-replied { background: #2d3a5c; color: var(--accent); }
+.badge-published { background: #1e3d2f; color: var(--success); }
+.badge-rejected { background: #3d2020; color: #e57373; }
+
+.email-link { color: var(--accent); text-decoration: none; }
+.email-link:hover { text-decoration: underline; }
+
+.lookup-result {
+  margin-top: 0.75rem;
+  background: var(--bg);
+  padding: 0.75rem;
+  border-radius: var(--radius);
+  font-size: 0.78rem;
+  white-space: pre-wrap;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+dialog {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  padding: 1.5rem;
+  max-width: 420px;
+  width: 90%;
+}
+
+dialog::backdrop { background: rgba(0,0,0,0.6); }
+
+dialog h3 { margin-bottom: 1rem; }
+
+dialog label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 0.75rem;
+}
+
+dialog label input, dialog label select, dialog label textarea {
+  display: block;
+  width: 100%;
+  margin-top: 0.25rem;
+}
+
+.dialog-actions { display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.5rem; }
+
+.actions-cell { display: flex; gap: 0.25rem; }

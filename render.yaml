@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: backlink-outreach-tool
+    runtime: docker
+    plan: starter
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATA_DIR
+        value: /app/data
+    disk:
+      name: outreach-data
+      mountPath: /app/data
+      sizeGB: 1

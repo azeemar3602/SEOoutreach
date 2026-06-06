@@ -1,0 +1,20 @@
+{
+  "name": "backlink-outreach-tool",
+  "version": "1.0.0",
+  "description": "Multi-site backlink opportunity analyzer with guest post contact discovery",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "import": "node src/cli.js import",
+    "scan": "node src/cli.js scan",
+    "export": "node src/cli.js export"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.7.0",
+    "csv-parse": "^5.6.0",
+    "express": "^4.21.2"
+  }
+}
