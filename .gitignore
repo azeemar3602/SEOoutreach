@@ -1,4 +1,5 @@
 node_modules/
+.tmp-npm/
 data/*.db
 data/*.db-*
 data/test-urls.txt

@@ -12,11 +12,14 @@
     "build": "node -e \"console.log('No build step')\"",
     "import": "node src/cli.js import",
     "scan": "node src/cli.js scan",
-    "export": "node src/cli.js export"
+    "export": "node src/cli.js export",
+    "deploy:hostinger": "node scripts/deploy-hostinger.mjs"
   },
   "dependencies": {
+    "axios": "^1.8.0",
     "better-sqlite3": "^11.7.0",
     "csv-parse": "^5.6.0",
-    "express": "^4.21.2"
+    "express": "^4.21.2",
+    "tus-js-client": "^4.1.0"
   }
 }
