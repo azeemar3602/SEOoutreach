@@ -1,8 +1,20 @@
 # Backlink Outreach Tool
 
+Live site: **https://azbuilds.xyz** · Repo: [github.com/azeemar3602/SEOoutreach](https://github.com/azeemar3602/SEOoutreach)
+
 Multi-site backlink opportunity manager with **guest post contact discovery**. Import competitor backlinks, scan sites for emails and write-for-us pages, track outreach — works across unlimited sites.
 
 > This tool helps you **find contacts and manage outreach**. It does not auto-post links or spam sites.
+
+## Deploy on Hostinger (Business)
+
+1. hPanel → **Websites** → **Add Website** → **Node.js Web App**
+2. Connect GitHub repo **`azeemar3602/SEOoutreach`**
+3. Settings: Express.js · Node **20** · entry `src/server.js` · build `npm install` · start `npm start`
+4. Env: `NODE_ENV=production` and `DATA_DIR=./data`
+5. Deploy → attach **azbuilds.xyz**
+
+Full guide: [HOSTINGER-BUSINESS.md](./HOSTINGER-BUSINESS.md)
 
 ## Quick start
 
