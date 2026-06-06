@@ -4,3 +4,4 @@ data/*.db
 data/*.db-*
 data/test-urls.txt
 .env
+*.zip

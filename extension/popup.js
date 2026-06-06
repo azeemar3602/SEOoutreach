@@ -11,6 +11,7 @@ async function getApiBase() {
 
 async function api(path, opts = {}) {
   const res = await fetch(`${API}${path}`, {
+    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     ...opts,
   });
@@ -117,7 +118,7 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
 });
 
 document.getElementById('openToolBtn').addEventListener('click', () => {
-  chrome.tabs.create({ url: API });
+  chrome.tabs.create({ url: `${API}/dashboard` });
 });
 
 document.getElementById('useLocalBtn')?.addEventListener('click', async () => {

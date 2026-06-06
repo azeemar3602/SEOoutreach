@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — Backlink Outreach Tool</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="public-page">
+  <div class="auth-wrap">
+    <form class="auth-card" id="loginForm">
+      <h1>Sign in</h1>
+      <p class="auth-sub">Access your outreach dashboard</p>
+      <div class="form-error hidden" id="formError"></div>
+      <label>Email<input name="email" type="email" required autocomplete="email"></label>
+      <label>Password<input name="password" type="password" required autocomplete="current-password"></label>
+      <label class="checkbox-label"><input type="checkbox" name="remember"> Remember me</label>
+      <button type="submit" class="btn btn-primary btn-block">Sign in</button>
+      <p class="auth-links"><a href="/forgot-password">Forgot password?</a> · <a href="/signup">Create account</a></p>
+    </form>
+  </div>
+  <script src="/shared.js"></script>
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const errEl = document.getElementById('formError');
+      errEl.classList.add('hidden');
+      const fd = new FormData(e.target);
+      try {
+        const result = await api('/api/auth/login', {
+          method: 'POST',
+          body: JSON.stringify({
+            email: fd.get('email'),
+            password: fd.get('password'),
+            remember: fd.get('remember') === 'on',
+          }),
+        });
+        window.location.href = result.redirect || '/dashboard';
+      } catch (err) {
+        errEl.textContent = err.message;
+        errEl.classList.remove('hidden');
+      }
+    });
+  </script>
+</body>
+</html>

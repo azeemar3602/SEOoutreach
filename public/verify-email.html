@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify email — Backlink Outreach Tool</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="public-page">
+  <div class="auth-wrap">
+    <div class="auth-card" id="statusCard">
+      <h1>Verifying email...</h1>
+    </div>
+  </div>
+  <script src="/shared.js"></script>
+  <script>
+    (async () => {
+      const token = new URLSearchParams(window.location.search).get('token');
+      const card = document.getElementById('statusCard');
+      if (!token) {
+        card.innerHTML = '<h1>Invalid link</h1><p class="auth-sub">No verification token provided.</p>';
+        return;
+      }
+      try {
+        const result = await fetch(`/api/auth/verify-email?token=${encodeURIComponent(token)}`, { credentials: 'include' });
+        const data = await result.json();
+        if (!result.ok) throw new Error(data.error);
+        card.innerHTML = '<h1>Email verified</h1><p class="auth-sub">Redirecting to dashboard...</p>';
+        setTimeout(() => { window.location.href = data.redirect || '/dashboard'; }, 1500);
+      } catch (err) {
+        card.innerHTML = `<h1>Verification failed</h1><p class="auth-sub">${esc(err.message)}</p><p class="auth-links"><a href="/dashboard">Go to dashboard</a></p>`;
+      }
+    })();
+  </script>
+</body>
+</html>

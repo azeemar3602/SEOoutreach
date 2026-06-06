@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pricing — Backlink Outreach Tool</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="public-page">
+  <nav class="public-nav">
+    <a href="/" class="nav-brand">Outreach Tool</a>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/login">Login</a>
+      <a href="/signup" class="btn btn-primary btn-sm">Start free</a>
+    </div>
+  </nav>
+
+  <section class="pricing-header">
+    <h1>Simple pricing</h1>
+    <p>No Stripe yet — pick a plan at signup. Upgrade placeholders for Phase 2.</p>
+  </section>
+
+  <section class="pricing-grid" id="pricingGrid">
+    <p style="text-align:center;color:var(--muted)">Loading plans...</p>
+  </section>
+
+  <footer class="public-footer">
+    <p><a href="/signup">Get started</a> · <a href="/login">Login</a></p>
+  </footer>
+
+  <script src="/shared.js"></script>
+  <script>
+    fetch('/api/plans').then(r => r.json()).then((plans) => {
+      const grid = document.getElementById('pricingGrid');
+      grid.innerHTML = plans.map((p) => {
+        const price = p.monthly_price == null ? 'Custom' : p.monthly_price === 0 ? 'Free' : `$${p.monthly_price / 100}/mo`;
+        return `
+          <div class="pricing-card">
+            <h2>${esc(p.name)}</h2>
+            <div class="price">${price}</div>
+            <ul>
+              <li>${p.project_limit ?? 'Unlimited'} projects</li>
+              <li>${p.user_limit ?? 'Unlimited'} team members</li>
+              <li>${p.opportunity_limit ?? 'Unlimited'} opportunities</li>
+              <li>${p.scan_limit_monthly ?? 'Custom'} scans/month</li>
+              <li>${p.extension_enabled ? 'Chrome extension' : 'No extension'}</li>
+              <li>CSV export</li>
+            </ul>
+            <a href="/signup?plan=${p.key}" class="btn btn-primary btn-block">Choose ${esc(p.name)}</a>
+          </div>`;
+      }).join('');
+    });
+  </script>
+</body>
+</html>

@@ -1,8 +1,7 @@
 let activeProjectId = null;
+let currentUser = null;
 
 const $ = (sel) => document.querySelector(sel);
-const api = (path, opts = {}) =>
-  fetch(path, { headers: { 'Content-Type': 'application/json' }, ...opts }).then((r) => r.json());
 
 async function loadProjects() {
   const projects = await api('/api/projects');
@@ -114,11 +113,44 @@ function formatType(t) {
   return (t ?? 'unknown').replace(/_/g, ' ');
 }
 
-function esc(s) {
-  if (!s) return '';
-  const d = document.createElement('div');
-  d.textContent = s;
-  return d.innerHTML;
+async function initDashboard() {
+  const me = await requireAuth(true);
+  if (!me) return;
+
+  currentUser = me.user;
+  document.getElementById('userName').textContent = me.user.full_name;
+  document.getElementById('planBadge').textContent = me.usage?.plan_name ?? 'Admin';
+
+  if (me.usage) {
+    const box = document.getElementById('usageBox');
+    box.classList.remove('hidden');
+    box.innerHTML = `
+      <div class="usage-line">Projects: ${formatLimit(me.usage.projects.used, me.usage.projects.limit)}</div>
+      <div class="usage-line">Scans: ${formatLimit(me.usage.scans.used, me.usage.scans.limit)}</div>`;
+  }
+
+  if (!me.user.email_verified_at) {
+    document.getElementById('verifyBanner').classList.remove('hidden');
+  }
+
+  document.getElementById('logoutBtn').addEventListener('click', logout);
+  document.getElementById('resendVerifyBtn')?.addEventListener('click', async () => {
+    try {
+      const r = await api('/api/auth/resend-verification', { method: 'POST' });
+      alert(r.message);
+    } catch (err) {
+      alert(err.message);
+    }
+  });
+
+  try {
+    const ws = await api('/api/workspace');
+    document.getElementById('workspaceLabel').textContent = ws.name;
+  } catch {
+    document.getElementById('workspaceLabel').textContent = me.auth.isSuperAdmin ? 'Super Admin' : 'Workspace';
+  }
+
+  await loadProjects();
 }
 
 async function openEdit(id) {
@@ -168,26 +200,34 @@ $('#editForm').addEventListener('submit', async (e) => {
 $('#importCsvBtn').addEventListener('click', async () => {
   const csv = $('#importText').value.trim();
   if (!csv) return alert('Paste CSV content first');
-  const result = await api(`/api/projects/${activeProjectId}/import-csv`, {
-    method: 'POST',
-    body: JSON.stringify({ csv }),
-  });
-  alert(`Imported ${result.imported} opportunities (${result.skipped} skipped)`);
-  $('#importText').value = '';
-  refreshDashboard();
+  try {
+    const result = await api(`/api/projects/${activeProjectId}/import-csv`, {
+      method: 'POST',
+      body: JSON.stringify({ csv }),
+    });
+    alert(`Imported ${result.imported} opportunities (${result.skipped} skipped)`);
+    $('#importText').value = '';
+    refreshDashboard();
+  } catch (err) {
+    alert(err.message);
+  }
 });
 
 $('#importUrlsBtn').addEventListener('click', async () => {
   const text = $('#importText').value.trim();
   if (!text) return alert('Paste URLs first');
   const urls = text.split('\n').map((l) => l.trim()).filter(Boolean);
-  const result = await api(`/api/projects/${activeProjectId}/import-urls`, {
-    method: 'POST',
-    body: JSON.stringify({ urls }),
-  });
-  alert(`Imported ${result.imported} URLs (${result.skipped} skipped)`);
-  $('#importText').value = '';
-  refreshDashboard();
+  try {
+    const result = await api(`/api/projects/${activeProjectId}/import-urls`, {
+      method: 'POST',
+      body: JSON.stringify({ urls }),
+    });
+    alert(`Imported ${result.imported} URLs (${result.skipped} skipped)`);
+    $('#importText').value = '';
+    refreshDashboard();
+  } catch (err) {
+    alert(err.message);
+  }
 });
 
 $('#scanBtn').addEventListener('click', async () => {
@@ -195,27 +235,31 @@ $('#scanBtn').addEventListener('click', async () => {
   statusEl.classList.remove('hidden');
   statusEl.textContent = 'Starting contact scan (checks contact, about, write-for-us pages)...';
 
-  const { jobId } = await api(`/api/projects/${activeProjectId}/scan`, {
-    method: 'POST',
-    body: JSON.stringify({ limit: 25 }),
-  });
+  try {
+    const { jobId } = await api(`/api/projects/${activeProjectId}/scan`, {
+      method: 'POST',
+      body: JSON.stringify({ limit: 25 }),
+    });
 
-  const poll = setInterval(async () => {
-    const job = await api(`/api/scan/${jobId}`);
-    if (job.status === 'running' && job.progress) {
-      statusEl.textContent = `Scanning [${job.progress.current}/${job.progress.total}]: ${job.progress.domain}`;
-    }
-    if (job.status === 'done') {
-      clearInterval(poll);
-      statusEl.textContent = `Done — scanned ${job.result.scanned}, found ${job.result.found_email} emails, ${job.result.found_guest} guest post pages.`;
-      refreshDashboard();
-      setTimeout(() => statusEl.classList.add('hidden'), 8000);
-    }
-    if (job.status === 'error') {
-      clearInterval(poll);
-      statusEl.textContent = `Error: ${job.error}`;
-    }
-  }, 1500);
+    const poll = setInterval(async () => {
+      const job = await api(`/api/scan/${jobId}`);
+      if (job.status === 'running' && job.progress) {
+        statusEl.textContent = `Scanning [${job.progress.current}/${job.progress.total}]: ${job.progress.domain}`;
+      }
+      if (job.status === 'done') {
+        clearInterval(poll);
+        statusEl.textContent = `Done — scanned ${job.result.scanned}, found ${job.result.found_email} emails, ${job.result.found_guest} guest post pages.`;
+        refreshDashboard();
+        setTimeout(() => statusEl.classList.add('hidden'), 8000);
+      }
+      if (job.status === 'error') {
+        clearInterval(poll);
+        statusEl.textContent = `Error: ${job.error}`;
+      }
+    }, 1500);
+  } catch (err) {
+    statusEl.textContent = err.message;
+  }
 });
 
 $('#lookupBtn').addEventListener('click', async () => {
@@ -248,4 +292,4 @@ $('#filterType').addEventListener('change', refreshDashboard);
 $('#filterStatus').addEventListener('change', refreshDashboard);
 $('#filterHasEmail').addEventListener('change', refreshDashboard);
 
-loadProjects();
+initDashboard();

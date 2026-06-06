@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings — Backlink Outreach Tool</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <h1><a href="/dashboard" class="brand-link">Outreach Tool</a></h1>
+        <p>Workspace settings</p>
+      </div>
+      <a href="/dashboard" class="sidebar-link">← Back to dashboard</a>
+    </aside>
+    <main class="main">
+      <h2>Workspace settings</h2>
+      <div class="panels" style="margin-top:1rem">
+        <section class="panel">
+          <h3>Workspace</h3>
+          <form id="wsForm">
+            <label>Name<input name="name" id="wsName"></label>
+            <label>Website<input name="site_url" id="wsUrl" type="url"></label>
+            <button type="submit" class="btn btn-primary">Save</button>
+          </form>
+        </section>
+        <section class="panel">
+          <h3>Usage</h3>
+          <div id="usageDetails" class="usage-details"></div>
+          <a href="/pricing" class="btn btn-secondary" style="margin-top:0.75rem">Upgrade plan</a>
+        </section>
+      </div>
+      <section class="panel" style="margin-top:1rem">
+        <h3>Team members</h3>
+        <div id="membersList"></div>
+        <form id="inviteForm" class="row" style="margin-top:1rem">
+          <input type="email" name="email" placeholder="email@example.com" required>
+          <select name="role">
+            <option value="member">Member</option>
+            <option value="workspace_admin">Admin</option>
+          </select>
+          <button type="submit" class="btn btn-secondary">Invite</button>
+        </form>
+      </section>
+    </main>
+  </div>
+  <script src="/shared.js"></script>
+  <script>
+    async function load() {
+      const me = await requireAuth();
+      if (!me) return;
+
+      const ws = await api('/api/workspace');
+      document.getElementById('wsName').value = ws.name;
+      document.getElementById('wsUrl').value = ws.site_url || '';
+
+      const usage = await api('/api/workspace/usage');
+      document.getElementById('usageDetails').innerHTML = `
+        <p>Plan: <strong>${esc(usage.plan_name)}</strong></p>
+        <p>Projects: ${formatLimit(usage.projects.used, usage.projects.limit)}</p>
+        <p>Team: ${formatLimit(usage.users.used, usage.users.limit)}</p>
+        <p>Opportunities: ${formatLimit(usage.opportunities.used, usage.opportunities.limit)}</p>
+        <p>Scans (${usage.scans.period}): ${formatLimit(usage.scans.used, usage.scans.limit)}</p>`;
+
+      const members = await api('/api/workspace/members');
+      document.getElementById('membersList').innerHTML = members.map((m) => `
+        <div class="member-row">
+          <span>${esc(m.full_name)} &lt;${esc(m.email)}&gt;</span>
+          <span class="badge badge-new">${esc(m.role)}</span>
+        </div>`).join('');
+    }
+
+    document.getElementById('wsForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      await api('/api/workspace', {
+        method: 'PATCH',
+        body: JSON.stringify({ name: fd.get('name'), site_url: fd.get('site_url') }),
+      });
+      alert('Workspace updated');
+    });
+
+    document.getElementById('inviteForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      try {
+        await api('/api/workspace/invite', {
+          method: 'POST',
+          body: JSON.stringify({ email: fd.get('email'), role: fd.get('role') }),
+        });
+        alert('Invite sent (check server console in dev for link)');
+        e.target.reset();
+      } catch (err) {
+        alert(err.message);
+      }
+    });
+
+    load();
+  </script>
+</body>
+</html>

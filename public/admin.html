@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Super Admin — Backlink Outreach Tool</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <h1>Super Admin</h1>
+        <p>Platform management</p>
+      </div>
+      <nav class="admin-nav">
+        <button class="nav-tab active" data-tab="overview">Overview</button>
+        <button class="nav-tab" data-tab="workspaces">Workspaces</button>
+        <button class="nav-tab" data-tab="users">Users</button>
+        <button class="nav-tab" data-tab="audit">Audit logs</button>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="btn btn-sm btn-ghost" id="logoutBtn">Logout</button>
+        <a href="/dashboard" class="sidebar-link">Dashboard</a>
+      </div>
+    </aside>
+    <main class="main">
+      <section id="tab-overview">
+        <h2>Overview</h2>
+        <div class="stats" id="adminStats"></div>
+      </section>
+      <section id="tab-workspaces" class="hidden">
+        <h2>Workspaces</h2>
+        <div class="table-wrap"><table><thead><tr><th>Name</th><th>Plan</th><th>Status</th><th>Members</th><th>Projects</th><th></th></tr></thead><tbody id="wsTable"></tbody></table></div>
+      </section>
+      <section id="tab-users" class="hidden">
+        <h2>Users</h2>
+        <div class="table-wrap"><table><thead><tr><th>Name</th><th>Email</th><th>Status</th><th>Memberships</th></tr></thead><tbody id="usersTable"></tbody></table></div>
+      </section>
+      <section id="tab-audit" class="hidden">
+        <h2>Audit logs</h2>
+        <div class="table-wrap"><table><thead><tr><th>Time</th><th>Action</th><th>User</th><th>Workspace</th></tr></thead><tbody id="auditTable"></tbody></table></div>
+      </section>
+    </main>
+  </div>
+  <script src="/shared.js"></script>
+  <script src="/admin.js"></script>
+</body>
+</html>

@@ -3,146 +3,50 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Backlink Outreach Tool</title>
+  <title>Backlink Outreach Tool — SEO link-building CRM</title>
   <link rel="stylesheet" href="/style.css">
 </head>
-<body>
-  <div class="app">
-    <aside class="sidebar">
-      <div class="brand">
-        <h1>Outreach Tool</h1>
-        <p>Multi-site backlink & guest post CRM</p>
-      </div>
-      <div class="project-list" id="projectList"></div>
-      <button class="btn btn-ghost" id="newProjectBtn">+ New site</button>
-    </aside>
+<body class="public-page">
+  <nav class="public-nav">
+    <a href="/" class="nav-brand">Outreach Tool</a>
+    <div class="nav-links">
+      <a href="/pricing">Pricing</a>
+      <a href="/login">Login</a>
+      <a href="/signup" class="btn btn-primary btn-sm">Start free</a>
+    </div>
+  </nav>
 
-    <main class="main" id="mainPanel">
-      <div class="empty-state" id="emptyState">
-        <h2>Select or create a site</h2>
-        <p>Add your websites, import competitor backlinks, then scan for guest post contacts.</p>
-      </div>
+  <header class="hero">
+    <h1>Multi-site backlink outreach CRM</h1>
+    <p>Import competitor backlinks, find guest post contacts, track outreach — without spam or auto-posting.</p>
+    <div class="hero-actions">
+      <a href="/signup" class="btn btn-primary">Get started free</a>
+      <a href="/login" class="btn btn-secondary">Sign in</a>
+    </div>
+  </header>
 
-      <div class="dashboard hidden" id="dashboard">
-        <header class="topbar">
-          <div>
-            <h2 id="projectName"></h2>
-            <a id="projectUrl" href="#" target="_blank" rel="noopener"></a>
-          </div>
-          <div class="topbar-actions">
-            <button class="btn btn-secondary" id="exportBtn">Export CSV</button>
-            <button class="btn btn-primary" id="scanBtn">Scan for contacts</button>
-          </div>
-        </header>
+  <section class="features">
+    <div class="feature-card">
+      <h3>Import & categorize</h3>
+      <p>Paste Ahrefs or SEMrush CSV exports. Opportunities are scored and categorized automatically.</p>
+    </div>
+    <div class="feature-card">
+      <h3>Contact discovery</h3>
+      <p>Scan domains for write-for-us pages, contact forms, and editorial emails.</p>
+    </div>
+    <div class="feature-card">
+      <h3>Outreach pipeline</h3>
+      <p>Track status from new → contacted → published. Export CSV anytime.</p>
+    </div>
+    <div class="feature-card">
+      <h3>Chrome extension</h3>
+      <p>Capture opportunities from any page while browsing (Pro plan and above).</p>
+    </div>
+  </section>
 
-        <div class="stats" id="stats"></div>
-
-        <div class="toolbar">
-          <select id="filterType">
-            <option value="">All types</option>
-            <option value="guest_post">Guest post</option>
-            <option value="editorial">Editorial</option>
-            <option value="resource_page">Resource page</option>
-            <option value="directory">Directory</option>
-            <option value="forum">Forum</option>
-            <option value="unknown">Unknown</option>
-          </select>
-          <select id="filterStatus">
-            <option value="">All statuses</option>
-            <option value="new">New</option>
-            <option value="contacted">Contacted</option>
-            <option value="replied">Replied</option>
-            <option value="published">Published</option>
-            <option value="rejected">Rejected</option>
-          </select>
-          <label class="checkbox-label">
-            <input type="checkbox" id="filterHasEmail"> Has email
-          </label>
-          <button class="btn btn-ghost" id="refreshBtn">Refresh</button>
-        </div>
-
-        <div class="panels">
-          <section class="panel">
-            <h3>Import backlinks</h3>
-            <p class="hint">Paste Ahrefs / SEMrush CSV export, or one URL per line.</p>
-            <textarea id="importText" rows="6" placeholder="Referring page URL, Target URL, DR...&#10;https://example.com/guest-post, https://competitor.com, 45"></textarea>
-            <div class="row">
-              <button class="btn btn-secondary" id="importCsvBtn">Import as CSV</button>
-              <button class="btn btn-secondary" id="importUrlsBtn">Import as URLs</button>
-            </div>
-          </section>
-
-          <section class="panel">
-            <h3>Quick contact lookup</h3>
-            <div class="row">
-              <input type="text" id="lookupDomain" placeholder="example.com">
-              <button class="btn btn-secondary" id="lookupBtn">Find contacts</button>
-            </div>
-            <pre id="lookupResult" class="lookup-result hidden"></pre>
-          </section>
-        </div>
-
-        <div class="scan-status hidden" id="scanStatus"></div>
-
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Domain</th>
-                <th>Type</th>
-                <th>DR</th>
-                <th>Contact</th>
-                <th>Guest post page</th>
-                <th>Status</th>
-                <th>Score</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="oppTable"></tbody>
-          </table>
-        </div>
-      </div>
-    </main>
-  </div>
-
-  <dialog id="projectDialog">
-    <form method="dialog" id="projectForm">
-      <h3>New site project</h3>
-      <label>Site name<input name="name" required placeholder="Axion Communications"></label>
-      <label>Your site URL<input name="site_url" type="url" required placeholder="https://yoursite.com"></label>
-      <label>Notes<textarea name="notes" rows="2"></textarea></label>
-      <div class="dialog-actions">
-        <button type="button" class="btn btn-ghost" id="cancelProject">Cancel</button>
-        <button type="submit" class="btn btn-primary">Create</button>
-      </div>
-    </form>
-  </dialog>
-
-  <dialog id="editDialog">
-    <form method="dialog" id="editForm">
-      <h3>Edit opportunity</h3>
-      <input type="hidden" name="id">
-      <label>Status
-        <select name="status">
-          <option value="new">New</option>
-          <option value="contacted">Contacted</option>
-          <option value="replied">Replied</option>
-          <option value="published">Published</option>
-          <option value="rejected">Rejected</option>
-        </select>
-      </label>
-      <label>Contact email<input name="contact_email" type="email"></label>
-      <label>Contact name<input name="contact_name"></label>
-      <label>Guest post URL<input name="guest_post_url" type="url"></label>
-      <label>Contact page<input name="contact_page" type="url"></label>
-      <label>Notes<textarea name="notes" rows="3"></textarea></label>
-      <div class="dialog-actions">
-        <button type="button" class="btn btn-ghost" id="cancelEdit">Cancel</button>
-        <button type="submit" class="btn btn-primary">Save</button>
-      </div>
-    </form>
-  </dialog>
-
-  <script src="/app.js"></script>
+  <footer class="public-footer">
+    <p>Manual outreach only — no automated link building.</p>
+    <p><a href="/pricing">Pricing</a> · <a href="/login">Login</a></p>
+  </footer>
 </body>
 </html>
