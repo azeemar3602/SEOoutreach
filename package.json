@@ -3,11 +3,13 @@
   "version": "1.0.0",
   "description": "Multi-site backlink opportunity analyzer with guest post contact discovery",
   "type": "module",
+  "main": "src/server.js",
   "engines": {
-    "node": ">=18"
+    "node": ">=18 <=22"
   },
   "scripts": {
     "start": "node src/server.js",
+    "build": "node -e \"console.log('No build step')\"",
     "import": "node src/cli.js import",
     "scan": "node src/cli.js scan",
     "export": "node src/cli.js export"
